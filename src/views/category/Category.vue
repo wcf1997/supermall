@@ -41,6 +41,7 @@ import BackTop from 'components/content/backTop/BackTop'
 import { getCategory, getSubcategory, getCategoryDetail } from "network/category";
 import {POP, SELL, NEW} from 'common/const';
 import {itemListenerMixin, tabControlMixin, backTopMixin} from 'common/mixin'
+import {debounce} from 'common/utils'
 export default {
   name: "Category",
   components: {
@@ -82,12 +83,23 @@ export default {
     }
   },
   methods: {
-  contentShow(position) {
-      let positionY = -position.y
-     this.isShowBackTop = (positionY) > 2000 ? true : false;
+  backTopShow(position) {
+     let positionY = -position.y
+     this.isShowBackTop = (positionY) > 2000 ? true : false; 
+  
+  },
+  tb2ShowFn(position) {
+    let positionY = -position.y
      this.tb2Show = (positionY) >= this.getTabContentTop ? true : false
     
-    },
+
+  },
+  contentShow(position) {
+    // 防抖
+     debounce(this.backTopShow(position), 500)
+     debounce(this.tb2ShowFn(position), 500)
+   
+  },
     _getcategory() {
        // 获取分类数据
     getCategory().then(res => {
